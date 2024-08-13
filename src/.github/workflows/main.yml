@@ -1,0 +1,65 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14' # You can specify the version of Node.js you are using
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build # Adjust if you have a custom build script
+
+    - name: Run unit tests
+      run: npm test # This should be configured to run Jest tests
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: ./test-results # Adjust path if you have a custom test results output directory
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Install Vercel CLI
+      run: npm install --global vercel@latest
+
+    - name: Login to Vercel
+      run: echo "${{ secrets.QVeYAEWy4PRPMjZPGmyrLZpC }}" | vercel login --token
+
+    - name: Pull Vercel Environment Information
+      run: vercel pull --yes --environment=preview --token=${{ secrets.QVeYAEWy4PRPMjZPGmyrLZpC }}
+
+    - name: Build Project Artifacts
+      run: vercel build --token=${{ secrets.QVeYAEWy4PRPMjZPGmyrLZpC }}
+
+    - name: Deploy Project Artifacts to Vercel
+      run: vercel deploy --prebuilt --token=${{ secrets.QVeYAEWy4PRPMjZPGmyrLZpC }}
