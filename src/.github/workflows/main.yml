@@ -7,7 +7,7 @@ on:
       - master
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,27 +28,8 @@ jobs:
     - name: Build
       run: npm run build
 
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '20'  
-
-    - name: Install dependencies
-      run: npm install
-    
-    - name: Run Tests
-      run: npm test
-
   deploy:
-    needs: test
+    needs: build-and-test
     runs-on: ubuntu-latest
 
     steps:
@@ -67,13 +48,7 @@ jobs:
       run: npm install --global vercel@latest
 
     - name: Login to Vercel
-      run: echo "${{ secrets.QVeYAEWy4PRPMjZPGmyrLZpC }}" | vercel login --token
+      run: vercel login --token=${{ secrets.RkWdbJn25ueSBcm94Xd6K1hr }}
 
-    - name: Pull Vercel Environment Information
-      run: vercel pull --yes --environment=preview --token=${{ secrets.QVeYAEWy4PRPMjZPGmyrLZpC }}
-
-    - name: Build Project Artifacts
-      run: vercel build --token=${{ secrets.QVeYAEWy4PRPMjZPGmyrLZpC }}
-
-    - name: Deploy Project Artifacts to Vercel
-      run: vercel deploy --prebuilt --token=${{ secrets.QVeYAEWy4PRPMjZPGmyrLZpC }}
+    - name: Deploy to Vercel
+      run: vercel deploy --prebuilt --token=${{ secrets.RkWdbJn25ueSBcm94Xd6K1hr }} --prod
