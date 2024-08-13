@@ -3,7 +3,8 @@ name: React CI
 on:
   push:
     branches:
-      [main , master]
+      - main
+      - master
 
 jobs:
   build:
@@ -38,11 +39,11 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '20'
+        node-version: '20'  
 
     - name: Install dependencies
       run: npm install
-
+    
     - name: Run Tests
       run: npm test
 
